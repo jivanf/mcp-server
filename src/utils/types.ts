@@ -25,6 +25,12 @@ export interface BitwardenItem {
   notes?: string;
   type?: number;
   folderId?: string;
+  fields?: {
+    name: string;
+    value?: string | null | undefined;
+    type: 0 | 1 | 2 | 3;
+    linkedId?: number | undefined;
+  }[];
   login?: {
     username?: string;
     password?: string;

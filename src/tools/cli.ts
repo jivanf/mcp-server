@@ -373,6 +373,31 @@ export const createItemTool: Tool = {
         type: 'string',
         description: 'Folder ID to assign the item to',
       },
+      fields: {
+        type: 'array',
+        description:
+          'Custom fields. Types: 0 Text, 1 Hidden, 2 Boolean, 3 Linked.',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Custom field name' },
+            value: {
+              type: ['string', 'null'],
+              description: 'Custom field value',
+            },
+            type: {
+              type: 'number',
+              enum: [0, 1, 2, 3],
+              description: 'Custom field type',
+            },
+            linkedId: {
+              type: 'number',
+              description: 'Linked field identifier; required for type 3',
+            },
+          },
+          required: ['name', 'type'],
+        },
+      },
     },
     required: ['name', 'type'],
   },
@@ -572,6 +597,31 @@ export const editItemTool: Tool = {
       folderId: {
         type: 'string',
         description: 'New folder ID to assign the item to',
+      },
+      fields: {
+        type: 'array',
+        description:
+          'Replacement custom fields. Omit to preserve existing fields; use an empty array to clear them.',
+        items: {
+          type: 'object',
+          properties: {
+            name: { type: 'string', description: 'Custom field name' },
+            value: {
+              type: ['string', 'null'],
+              description: 'Custom field value',
+            },
+            type: {
+              type: 'number',
+              enum: [0, 1, 2, 3],
+              description: 'Custom field type',
+            },
+            linkedId: {
+              type: 'number',
+              description: 'Linked field identifier; required for type 3',
+            },
+          },
+          required: ['name', 'type'],
+        },
       },
     },
     required: ['id'],

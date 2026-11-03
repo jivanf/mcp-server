@@ -265,6 +265,30 @@ export const secureNoteSchema = z.object({
   type: z.literal(0).optional(),
 });
 
+// Schema for custom fields on vault items.
+// Field types: 0 = Text, 1 = Hidden, 2 = Boolean, 3 = Linked.
+export const customFieldSchema = z
+  .object({
+    name: z.string().min(1, 'Custom field name is required'),
+    value: z.string().nullable().optional(),
+    type: z.union([
+      z.literal(0),
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+    ]),
+    linkedId: z.number().int().optional(),
+  })
+  .superRefine((field, context) => {
+    if (field.type === 3 && field.linkedId === undefined) {
+      context.addIssue({
+        code: 'custom',
+        path: ['linkedId'],
+        message: 'Linked custom fields require linkedId',
+      });
+    }
+  });
+
 // Schema for validating 'create item' command parameters
 export const createItemSchema = z
   .object({
@@ -284,6 +308,8 @@ export const createItemSchema = z
     secureNote: secureNoteSchema.optional(),
     // Folder ID to assign the item to
     folderId: z.string().optional(),
+    // Custom fields to add to the item
+    fields: z.array(customFieldSchema).optional(),
   })
   .refine(
     (data) => {
@@ -412,6 +438,8 @@ export const editItemSchema = z.object({
   secureNote: editSecureNoteSchema.optional(),
   // New folder ID to assign the item to
   folderId: z.string().optional(),
+  // Replacement custom fields; omit to preserve existing fields
+  fields: z.array(customFieldSchema).optional(),
 });
 
 // Schema for validating 'edit folder' command parameters
